@@ -1,96 +1,70 @@
-// singly linked list  queue using array->enqeue and dequeue operations,rear & peak,  isfull and isempty operations, display
+// circular linked list queue using array->enqeue and dequeue operations,rear & peak,  isfull and isempty operations, display
 
 #include <stdio.h>
-#include <stdlib.h>
 
-struct Node
-{
-    int data;
-    struct Node *next;
-};
+#define MAX 5
 
-struct Node *front = NULL;
-struct Node *rear = NULL;
-
+int queue[MAX];
+int front = -1;
+int rear = -1;
 
 // Check if Queue is Empty
 int isEmpty()
 {
-    return (front == NULL);
+    return (front == -1);
 }
-
 
 // Check if Queue is Full
 int isFull()
 {
-    struct Node *temp;
-
-    temp = (struct Node *)malloc(sizeof(struct Node));
-
-    if (temp == NULL)
-        return 1;
-
-    free(temp);
-    return 0;
+    return ((rear + 1) % MAX == front);
 }
-
 
 // Enqueue
 void enqueue(int value)
 {
-    struct Node *newNode;
-
     if (isFull())
     {
         printf("Queue is Full\n");
         return;
     }
 
-    newNode = (struct Node *)malloc(sizeof(struct Node));
-
-    newNode->data = value;
-    newNode->next = NULL;
-
-    if (front == NULL)
+    // First element
+    if (front == -1)
     {
-        front = newNode;
-        rear = newNode;
+        front = 0;
     }
-    else
-    {
-        rear->next = newNode;
-        rear = newNode;
-    }
+
+    rear = (rear + 1) % MAX;
+    queue[rear] = value;
 
     printf("%d inserted into queue\n", value);
 }
 
-
 // Dequeue
 void dequeue()
 {
-    struct Node *temp;
-
     if (isEmpty())
     {
         printf("Queue is Empty\n");
         return;
     }
 
-    temp = front;
+    printf("%d deleted from queue\n", queue[front]);
 
-    printf("%d deleted from queue\n", front->data);
-
-    front = front->next;
-
-    if (front == NULL)
-        rear = NULL;
-
-    free(temp);
+    // If only one element is present
+    if (front == rear)
+    {
+        front = -1;
+        rear = -1;
+    }
+    else
+    {
+        front = (front + 1) % MAX;
+    }
 }
 
-
-// Peek
+// Peek - shows front element
 void peek()
 {
     if (isEmpty())
@@ -99,11 +73,10 @@ void peek()
         return;
     }
 
-    printf("Front element = %d\n", front->data);
+    printf("Front element = %d\n", queue[front]);
 }
 
-
-// Rear
+// Rear - shows last element
 void rearElement()
 {
     if (isEmpty())
@@ -112,14 +85,13 @@ void rearElement()
         return;
     }
 
-    printf("Rear element = %d\n", rear->data);
+    printf("Rear element = %d\n", queue[rear]);
 }
-
 
 // Display
 void display()
 {
-    struct Node *temp;
+    int i;
 
     if (isEmpty())
     {
@@ -127,19 +99,22 @@ void display()
         return;
     }
 
-    temp = front;
-
     printf("Queue: ");
 
-    while (temp != NULL)
+    i = front;
+
+    while (1)
     {
-        printf("%d ", temp->data);
-        temp = temp->next;
+        printf("%d ", queue[i]);
+
+        if (i == rear)
+            break;
+
+        i = (i + 1) % MAX;
     }
 
     printf("\n");
 }
-
 
 int main()
 {
@@ -147,7 +122,7 @@ int main()
 
     while (1)
     {
-        printf("\n----- QUEUE USING SINGLY LINKED LIST -----\n");
+        printf("\n----- CIRCULAR QUEUE -----\n");
         printf("1. Enqueue\n");
         printf("2. Dequeue\n");
         printf("3. Peek\n");
@@ -199,7 +174,7 @@ int main()
                 break;
 
             case 8:
-                exit(0);
+                return 0;
 
             default:
                 printf("Invalid Choice\n");
